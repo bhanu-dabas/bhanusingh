@@ -1,0 +1,26 @@
+---
+- name: Import MongoDB public GPG Key for Red Hat
+  ansible.builtin.shell:
+    cmd: "rpm --import https://www.mongodb.org/static/pgp/server-7.0.asc"
+
+- name: Create MongoDB 7.0 repository file for Red Hat
+  ansible.builtin.copy:
+    content: |
+      [mongodb-org-7.0]
+      name=MongoDB Repository
+      baseurl=https://repo.mongodb.org/yum/redhat/9/mongodb-org/7.0/x86_64/
+      gpgcheck=1
+      enabled=1
+      gpgkey=https://pgp.mongodb.com/server-7.0.asc
+    dest: /etc/yum.repos.d/mongodb-org-7.0.repo
+
+- name: Install MongoDB 7.0 packages on Red Hat
+  ansible.builtin.yum:
+    name: mongodb-org
+    state: present
+
+- name: Start MongoDB service on Red Hat
+  ansible.builtin.service:
+    name: mongod
+    state: started
+    enabled: yes
